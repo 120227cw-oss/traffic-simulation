@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>교통 혼잡도 시뮬레이션</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .title {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .input-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            height: fit-content;
+        }
+
+        .input-section h2 {
+            color: #667eea;
+            font-size: 16px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 22px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .button-group-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .option-btn {
+            padding: 10px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #666;
+        }
+
+        .option-btn:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .option-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .value-info {
+            font-size: 11px;
+            color: #999;
+            margin-top: 6px;
+            padding: 8px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .control-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 25px 0;
+        }
+
+        .control-btn {
+            padding: 12px;
+            border: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .control-btn:active {
+            transform: translateY(0);
+        }
+
+        .reset-btn {
+            background: #999;
+            grid-column: 1 / -1;
+        }
+
+        .reset-btn:hover {
+            box-shadow: 0 10px 20px rgba(153, 153, 153, 0.3);
+        }
+
+        .pause-btn {
+            background: #ff9800;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 12px;
+            margin-top: 15px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #1565c0;
+            line-height: 1.5;
+        }
+
+        .visualization-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 20px;
+        }
+
+        .canvas-container {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        #trafficCanvas {
+            display: block;
+            width: 100%;
+            height: 300px;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .result-box {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            text-align: center;
+        }
+
+        .result-box h3 {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .result-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 10px;
+            transition: width 0.3s, background 0.3s;
+        }
+
+        .progress-fill.yellow {
+            background: linear-gradient(90deg, #ffc107, #ff9800);
+        }
+
+        .progress-fill.red {
+            background: linear-gradient(90deg, #f44336, #e91e63);
+        }
+
+        .status-section {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+        }
+
+        .status-section h3 {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 12px;
+            font-weight: bold;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .status-good {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+
+        .status-moderate {
+            background: #fff9c4;
+            color: #f57f17;
+        }
+
+        .status-poor {
+            background: #ffcccc;
+            color: #c62828;
+        }
+
+        .status-critical {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .status-text {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .los-info {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .los-level {
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            text-align: center;
+            color: white;
+        }
+
+        .los-a { background: #4caf50; }
+        .los-b { background: #8bc34a; }
+        .los-c { background: #ffc107; color: #333; }
+        .los-d { background: #ff9800; }
+        .los-e { background: #f44336; }
+        .los-f { background: #9c27b0; }
+
+        .explanation {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            line-height: 1.8;
+            color: #555;
+            margin-top: 30px;
+        }
+
+        .explanation h3 {
+            color: #333;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .explanation ul {
+            margin-left: 20px;
+        }
+
+        .explanation li {
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group-options {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">🚗 교통 혼잡도 시뮬레이션</h1>
+
+        <div class="main-grid">
+            <div class="input-section">
+                <h2>⚙️ 설정</h2>
+                
+                <div class="input-group">
+                    <label>평균 속도</label>
+                    <div class="button-group-options">
+                        <button class="option-btn active" onclick="setSpeed('slow')">느림</button>
+                        <button class="option-btn" onclick="setSpeed('normal')">보통</button>
+                        <button class="option-btn" onclick="setSpeed('fast')">빠름</button>
+                    </div>
+                    <div class="value-info" id="speedInfo">40 km/h (느림)</div>
+                </div>
+
+                <div class="input-group">
+                    <label>교통량</label>
+                    <div class="button-group-options">
+                        <button class="option-btn" onclick="setVolume('low')">적음</button>
+                        <button class="option-btn active" onclick="setVolume('normal')">보통</button>
+                        <button class="option-btn" onclick="setVolume('high')">많음</button>
+                    </div>
+                    <div class="value-info" id="volumeInfo">60 대/분 (보통)</div>
+                </div>
+
+                <div class="input-group">
+                    <label>차량 밀도</label>
+                    <div class="button-group-options">
+                        <button class="option-btn" onclick="setDensity('low')">적음</button>
+                        <button class="option-btn active" onclick="setDensity('normal')">보통</button>
+                        <button class="option-btn" onclick="setDensity('high')">많음</button>
+                    </div>
+                    <div class="value-info" id="densityInfo">40 대/km (보통)</div>
+                </div>
+
+                <div class="control-buttons">
+                    <button class="control-btn" onclick="startSimulation()">▶ 시작</button>
+                    <button class="control-btn pause-btn" onclick="togglePause()">⏸ 일시정지</button>
+                </div>
+
+                <button class="control-btn reset-btn" onclick="resetSimulation()">↺ 초기화</button>
+
+                <div class="info-box">
+                    💡 <strong>정체는 무작위로 발생합니다!</strong> 같은 조건에서도 매번 다른 패턴의 교통이 발생합니다.
+                </div>
+            </div>
+
+            <div class="visualization-section">
+                <div class="canvas-container">
+                    <canvas id="trafficCanvas"></canvas>
+                </div>
+
+                <div class="result-grid">
+                    <div class="result-box">
+                        <h3>실제 혼잡도</h3>
+                        <div class="result-value" id="congestionIndex">0%</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="congestionBar" style="width: 0%; font-size: 9px;">0%</div>
+                        </div>
+                    </div>
+
+                    <div class="result-box">
+                        <h3>체감 혼잡도</h3>
+                        <div class="result-value" id="perceivedCongestion">0%</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="perceivedBar" style="width: 0%; font-size: 9px;">0%</div>
+                        </div>
+                    </div>
+
+                    <div class="result-box">
+                        <h3>서비스 수준</h3>
+                        <div class="result-value" id="losLevel">-</div>
+                        <div style="font-size: 11px; color: #999; margin-top: 10px;">
+                            <span class="status-badge" id="losBadge">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="status-section">
+                    <h3>📊 상황 분석</h3>
+                    <div id="statusText" class="status-text"></div>
+                    <div class="los-info">
+                        <div class="los-level los-a">A 자유</div>
+                        <div class="los-level los-b">B 양호</div>
+                        <div class="los-level los-c">C 보통</div>
+                        <div class="los-level los-d">D 혼잡</div>
+                        <div class="los-level los-e">E 심각</div>
+                        <div class="los-level los-f">F 정체</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="explanation">
+            <h3>📖 용어 설명</h3>
+            <ul>
+                <li><strong>교통량:</strong> 단위 시간당 도로를 통과하는 차량 수 (적음: 30대/분, 보통: 60대/분, 많음: 100대/분)</li>
+                <li><strong>평균 속도:</strong> 도로상의 차량들이 이동하는 속도 (느림: 40km/h, 보통: 60km/h, 빠름: 90km/h)</li>
+                <li><strong>차량 밀도:</strong> 단위 거리당 도로상의 차량 수 (적음: 20대/km, 보통: 40대/km, 많음: 80대/km)</li>
+                <li><strong>실제 혼잡도:</strong> 교통량과 밀도의 비율로 계산한 객관적 혼잡도</li>
+                <li><strong>체감 혼잡도:</strong> 운전자가 느끼는 속도 저하 기반의 주관적 혼잡도</li>
+                <li><strong>서비스 수준(LOS):</strong> A(자유) ~ F(완전정체)로 표현되는 도로 서비스 질 평가</li>
+                <li><strong>무작위 정체:</strong> 차선 변경, 급가속, 사고 등 예측 불가능한 현실적인 정체 현상을 시뮬레이션합니다.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        class Vehicle {
+            constructor(lane, x, speed) {
+                this.lane = lane;
+                this.x = x;
+                this.targetSpeed = speed;
+                this.speed = speed;
+                this.width = 20;
+                this.height = 12;
+                this.acceleration = 0.1;
+                // 무작위 성향 (보수적이거나 공격적)
+                this.drivingBehavior = Math.random();
+            }
+
+            getColor(speed) {
+                if (speed > 80) return '#4CAF50';      // 초록색
+                if (speed > 60) return '#8BC34A';      // 연두색
+                if (speed > 40) return '#FFC107';      // 노랑색
+                if (speed > 20) return '#FF9800';      // 주황색
+                return '#F44336';                      // 빨간색
+            }
+
+            update(canvasWidth, otherVehicles, targetSpeed) {
+                // 목표 속도 업데이트
+                this.targetSpeed = targetSpeed;
+                
+                // 무작위 방해 요소 (사고, 차선 변경 등) - 약 1% 확률
+                if (Math.random() < 0.01) {
+                    const disruption = (Math.random() - 0.5) * 20;
+                    this.targetSpeed = Math.max(10, this.targetSpeed + disruption);
+                }
+                
+                // 앞의 차량과의 거리 확인
+                let minSafeDistance = 40;
+                let canAccelerate = true;
+                let closestDistance = Infinity;
+
+                for (let other of otherVehicles) {
+                    if (other.lane === this.lane && other !== this) {
+                        let distance = other.x - this.x;
+                        if (distance > 0 && distance < minSafeDistance + 20) {
+                            // 앞에 차량이 있으면 안전거리 유지
+                            const adjustedTargetSpeed = Math.max(10, other.speed - 3 - (5 * this.drivingBehavior));
+                            this.targetSpeed = Math.min(this.targetSpeed, adjustedTargetSpeed);
+                            canAccelerate = false;
+                            closestDistance = Math.min(closestDistance, distance);
+                        }
+                    }
+                }
+
+                // 운전 성향에 따른 속도 조정
+                // 보수적 운전자(behavior < 0.5): 더 천천히 속도 조정
+                // 공격적 운전자(behavior > 0.5): 더 빠르게 속도 조정
+                const accelerationFactor = this.drivingBehavior > 0.5 ? 1.3 : 0.8;
+                const decelerationFactor = this.drivingBehavior > 0.5 ? 1.2 : 1.5;
+
+                if (this.speed < this.targetSpeed && canAccelerate) {
+                    this.speed = Math.min(this.speed + this.acceleration * accelerationFactor, this.targetSpeed);
+                } else if (this.speed > this.targetSpeed) {
+                    this.speed = Math.max(this.speed - this.acceleration * decelerationFactor, this.targetSpeed);
+                }
+
+                // 무작위 미세한 속도 변화 (자연스러운 움직임)
+                this.speed += (Math.random() - 0.5) * 1;
+                this.speed = Math.max(10, Math.min(100, this.speed));
+
+                // 위치 업데이트
+                this.x += this.speed / 10;
+
+                // 화면을 벗어나면 다시 시작 위치로
+                if (this.x > canvasWidth) {
+                    this.x = -30;
+                }
+            }
+
+            draw(ctx, canvasHeight) {
+                const laneHeight = canvasHeight / 3;
+                const y = this.lane * laneHeight + laneHeight / 2 - this.height / 2;
+
+                ctx.fillStyle = this.getColor(this.speed);
+                ctx.fillRect(this.x, y, this.width, this.height);
+
+                ctx.fillStyle = '#87CEEB';
+                ctx.fillRect(this.x + 4, y + 2, 5, 4);
+                ctx.fillRect(this.x + 11, y + 2, 5, 4);
+
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(this.x, y, this.width, this.height);
+            }
+        }
+
+        class TrafficSimulation {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+                this.vehicles = [];
+                this.isRunning = false;
+                this.isPaused = false;
+                this.frameCount = 0;
+                
+                this.trafficVolume = 60;      // 대/분
+                this.avgSpeed = 40;           // km/h
+                this.vehicleDensity = 40;     // 대/km
+
+                this.resizeCanvas();
+                window.addEventListener('resize', () => this.resizeCanvas());
+            }
+
+            resizeCanvas() {
+                const container = this.canvas.parentElement;
+                this.canvas.width = container.clientWidth;
+                this.canvas.height = 300;
+            }
+
+            start() {
+                this.isRunning = true;
+                this.isPaused = false;
+                this.vehicles = [];
+                this.frameCount = 0;
+                this.animate();
+            }
+
+            togglePause() {
+                if (this.isRunning) {
+                    this.isPaused = !this.isPaused;
+                }
+            }
+
+            reset() {
+                this.isRunning = false;
+                this.isPaused = false;
+                this.vehicles = [];
+                this.frameCount = 0;
+                
+                // 버튼 초기화
+                document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.option-btn')[0].classList.add('active');
+                document.querySelectorAll('.option-btn')[4].classList.add('active');
+                document.querySelectorAll('.option-btn')[7].classList.add('active');
+
+                this.trafficVolume = 60;
+                this.avgSpeed = 40;
+                this.vehicleDensity = 40;
+
+                document.getElementById('speedInfo').textContent = '40 km/h (느림)';
+                document.getElementById('volumeInfo').textContent = '60 대/분 (보통)';
+                document.getElementById('densityInfo').textContent = '40 대/km (보통)';
+
+                this.draw();
+            }
+
+            updateSimulation() {
+                // 교통량에 따라 차량 추가 (프레임 기반)
+                const vehiclesPerFrame = this.trafficVolume / (60 * 60); // 60fps, 1분
+                
+                if (Math.random() < vehiclesPerFrame) {
+                    const lane = Math.floor(Math.random() * 3);
+                    // 무작위 속도 변화 (운전자마다 다른 선호 속도)
+                    const speedVariation = (Math.random() - 0.5) * 30;
+                    const speed = Math.max(10, this.avgSpeed + speedVariation);
+                    this.vehicles.push(new Vehicle(lane, -30, speed));
+                }
+
+                // 차량 업데이트
+                for (let vehicle of this.vehicles) {
+                    vehicle.update(this.canvas.width, this.vehicles, this.avgSpeed);
+                }
+
+                // 화면을 벗어난 차량 제거
+                this.vehicles = this.vehicles.filter(v => v.x < this.canvas.width + 30);
+            }
+
+            calculateMetrics() {
+                // 실제 혼잡도 계산 (교통량과 밀도 기반)
+                const volumeRatio = Math.min(1, this.trafficVolume / 100);
+                const densityRatio = Math.min(1, this.vehicleDensity / 100);
+                const congestionIndex = Math.round((volumeRatio + densityRatio) / 2 * 100);
+
+                // 체감 혼잡도 (속도 저하 기반)
+                const speedRatio = Math.max(0, (90 - this.avgSpeed) / 90);
+                const perceivedCongestion = Math.round(speedRatio * 100);
+
+                // 서비스 수준 (LOS) 결정
+                const los = this.getLOS(this.avgSpeed, this.vehicleDensity);
+
+                return {
+                    congestionIndex: congestionIndex,
+                    perceivedCongestion: perceivedCongestion,
+                    los: los,
+                    vehiclesOnRoad: this.vehicles.length,
+                    avgSpeed: Math.round(this.avgSpeed)
+                };
+            }
+
+            getLOS(speed, density) {
+                if (speed > 80 && density < 25) return 'A';
+                if (speed > 70 && density < 40) return 'B';
+                if (speed > 55 && density < 50) return 'C';
+                if (speed > 45 && density < 65) return 'D';
+                if (speed > 30 && density < 80) return 'E';
+                return 'F';
+            }
+
+            getStatusText(metrics) {
+                const los = metrics.los;
+                const statusMap = {
+                    'A': { status: '자유로운 교통 흐름 - 운전이 쾌적합니다.', emoji: '😊', badge: 'good' },
+                    'B': { status: '양호한 교통 흐름 - 약간의 제약이 있지만 무리가 없습니다.', emoji: '😐', badge: 'good' },
+                    'C': { status: '보통 혼잡 - 교통량이 중간 정도입니다.', emoji: '😕', badge: 'moderate' },
+                    'D': { status: '혼잡 - 속도 저하가 뚜렷합니다.', emoji: '😟', badge: 'poor' },
+                    'E': { status: '심각한 혼잡 - 심각한 정체가 발생하고 있습니다.', emoji: '😠', badge: 'poor' },
+                    'F': { status: '완전 정체 - 도로가 완전히 포화되었습니다.', emoji: '😡', badge: 'critical' }
+                };
+
+                const info = statusMap[los];
+                return {
+                    text: `${info.emoji} ${info.status}\n속도: ${metrics.avgSpeed} km/h | 혼잡도: ${metrics.congestionIndex}% | 도로상 차량: ${metrics.vehiclesOnRoad}대`,
+                    badge: info.badge
+                };
+            }
+
+            updateUI() {
+                const metrics = this.calculateMetrics();
+                
+                // 실제 혼잡도 업데이트
+                document.getElementById('congestionIndex').textContent = metrics.congestionIndex + '%';
+                const congestionBar = document.getElementById('congestionBar');
+                congestionBar.style.width = metrics.congestionIndex + '%';
+                congestionBar.textContent = metrics.congestionIndex + '%';
+                if (metrics.congestionIndex > 60) {
+                    congestionBar.classList.add('red');
+                    congestionBar.classList.remove('yellow');
+                } else if (metrics.congestionIndex > 40) {
+                    congestionBar.classList.add('yellow');
+                    congestionBar.classList.remove('red');
+                } else {
+                    congestionBar.classList.remove('yellow', 'red');
+                }
+
+                // 체감 혼잡도 업데이트
+                document.getElementById('perceivedCongestion').textContent = metrics.perceivedCongestion + '%';
+                const perceivedBar = document.getElementById('perceivedBar');
+                perceivedBar.style.width = metrics.perceivedCongestion + '%';
+                perceivedBar.textContent = metrics.perceivedCongestion + '%';
+                if (metrics.perceivedCongestion > 60) {
+                    perceivedBar.classList.add('red');
+                    perceivedBar.classList.remove('yellow');
+                } else if (metrics.perceivedCongestion > 40) {
+                    perceivedBar.classList.add('yellow');
+                    perceivedBar.classList.remove('red');
+                } else {
+                    perceivedBar.classList.remove('yellow', 'red');
+                }
+
+                // 서비스 수준 업데이트
+                document.getElementById('losLevel').textContent = metrics.los;
+                const losBadge = document.getElementById('losBadge');
+                const losTexts = ['A 자유', 'B 양호', 'C 보통', 'D 혼잡', 'E 심각', 'F 정체'];
+                const losClasses = ['status-good', 'status-good', 'status-moderate', 'status-poor', 'status-poor', 'status-critical'];
+                const losIndex = metrics.los.charCodeAt(0) - 65;
+                losBadge.textContent = losTexts[losIndex];
+                losBadge.className = 'status-badge ' + losClasses[losIndex];
+
+                // 상황 텍스트 업데이트
+                const statusInfo = this.getStatusText(metrics);
+                document.getElementById('statusText').innerHTML = statusInfo.text.replace(/\n/g, '<br>');
+            }
+
+            draw() {
+                const ctx = this.ctx;
+                const width = this.canvas.width;
+                const height = this.canvas.height;
+
+                // 도로 배경
+                ctx.fillStyle = '#333';
+                ctx.fillRect(0, 0, width, height);
+
+                // 차선 표시
+                const laneHeight = height / 3;
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([20, 10]);
+
+                for (let i = 1; i < 3; i++) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, i * laneHeight);
+                    ctx.lineTo(width, i * laneHeight);
+                    ctx.stroke();
+                }
+
+                ctx.setLineDash([]);
+
+                // 도로 경계선
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(width, 0);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(0, height);
+                ctx.lineTo(width, height);
+                ctx.stroke();
+
+                // 차량 그리기
+                for (let vehicle of this.vehicles) {
+                    vehicle.draw(ctx, height);
+                }
+
+                // 통계 정보 표시
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                ctx.fillRect(10, 10, 220, 80);
+                
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 12px Arial';
+                ctx.fillText('도로상 차량: ' + this.vehicles.length + '대', 20, 30);
+                ctx.fillText('평균 속도: ' + this.avgSpeed + ' km/h', 20, 50);
+                ctx.fillText('시뮬레이션: ' + (this.isPaused ? '일시정지' : '진행중'), 20, 70);
+                ctx.fillText('프레임: ' + this.frameCount, 20, 85);
+            }
+
+            animate() {
+                if (!this.isPaused) {
+                    this.updateSimulation();
+                    this.updateUI();
+                }
+
+                this.draw();
+                this.frameCount++;
+
+                if (this.isRunning) {
+                    requestAnimationFrame(() => this.animate());
+                }
+            }
+        }
+
+        let simulation;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            simulation = new TrafficSimulation('trafficCanvas');
+        });
+
+        function setSpeed(level) {
+            const speedButtons = document.querySelectorAll('.option-btn');
+            speedButtons[0].classList.toggle('active', level === 'slow');
+            speedButtons[1].classList.toggle('active', level === 'normal');
+            speedButtons[2].classList.toggle('active', level === 'fast');
+
+            switch(level) {
+                case 'slow':
+                    simulation.avgSpeed = 40;
+                    document.getElementById('speedInfo').textContent = '40 km/h (느림)';
+                    break;
+                case 'normal':
+                    simulation.avgSpeed = 60;
+                    document.getElementById('speedInfo').textContent = '60 km/h (보통)';
+                    break;
+                case 'fast':
+                    simulation.avgSpeed = 90;
+                    document.getElementById('speedInfo').textContent = '90 km/h (빠름)';
+                    break;
+            }
+        }
+
+        function setVolume(level) {
+            const volumeButtons = document.querySelectorAll('.option-btn');
+            volumeButtons[3].classList.toggle('active', level === 'low');
+            volumeButtons[4].classList.toggle('active', level === 'normal');
+            volumeButtons[5].classList.toggle('active', level === 'high');
+
+            switch(level) {
+                case 'low':
+                    simulation.trafficVolume = 30;
+                    document.getElementById('volumeInfo').textContent = '30 대/분 (적음)';
+                    break;
+                case 'normal':
+                    simulation.trafficVolume = 60;
+                    document.getElementById('volumeInfo').textContent = '60 대/분 (보통)';
+                    break;
+                case 'high':
+                    simulation.trafficVolume = 100;
+                    document.getElementById('volumeInfo').textContent = '100 대/분 (많음)';
+                    break;
+            }
+        }
+
+        function setDensity(level) {
+            const densityButtons = document.querySelectorAll('.option-btn');
+            densityButtons[6].classList.toggle('active', level === 'low');
+            densityButtons[7].classList.toggle('active', level === 'normal');
+            densityButtons[8].classList.toggle('active', level === 'high');
+
+            switch(level) {
+                case 'low':
+                    simulation.vehicleDensity = 20;
+                    document.getElementById('densityInfo').textContent = '20 대/km (적음)';
+                    break;
+                case 'normal':
+                    simulation.vehicleDensity = 40;
+                    document.getElementById('densityInfo').textContent = '40 대/km (보통)';
+                    break;
+                case 'high':
+                    simulation.vehicleDensity = 80;
+                    document.getElementById('densityInfo').textContent = '80 대/km (많음)';
+                    break;
+            }
+        }
+
+        function startSimulation() {
+            simulation.start();
+        }
+
+        function togglePause() {
+            if (simulation.isRunning) {
+                simulation.togglePause();
+            }
+        }
+
+        function resetSimulation() {
+            simulation.reset();
+        }
+    </script>
+</body>
+</html>
