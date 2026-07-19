@@ -12,7 +12,7 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdance, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
@@ -37,7 +37,7 @@
 
         .main-grid {
             display: grid;
-            grid-template-columns: 300px 1fr 1fr;
+            grid-template-columns: 280px 1fr 1fr;
             gap: 30px;
             margin-bottom: 30px;
         }
@@ -83,37 +83,6 @@
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .button-group-options {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 10px;
-        }
-
-        .option-btn {
-            padding: 10px;
-            border: 2px solid #ddd;
-            background: white;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            color: #666;
-        }
-
-        .option-btn:hover {
-            border-color: #667eea;
-            background: #f0f4ff;
-        }
-
-        .option-btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-color: #667eea;
-            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
         }
 
         .value-info {
@@ -175,6 +144,17 @@
             border-radius: 4px;
             font-size: 12px;
             color: #1565c0;
+            line-height: 1.5;
+        }
+
+        .traffic-info {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            margin-top: 15px;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #856404;
             line-height: 1.5;
         }
 
@@ -281,35 +261,6 @@
             color: #333;
             margin-bottom: 12px;
             font-weight: bold;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 8px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .status-good {
-            background: #c8e6c9;
-            color: #2e7d32;
-        }
-
-        .status-moderate {
-            background: #fff9c4;
-            color: #f57f17;
-        }
-
-        .status-poor {
-            background: #ffcccc;
-            color: #c62828;
-        }
-
-        .status-critical {
-            background: #ff6b6b;
-            color: white;
         }
 
         .status-text {
@@ -429,7 +380,7 @@
 
         @media (max-width: 1200px) {
             .main-grid {
-                grid-template-columns: 300px 1fr;
+                grid-template-columns: 280px 1fr;
             }
         }
 
@@ -439,10 +390,6 @@
             }
 
             .result-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .button-group-options {
                 grid-template-columns: 1fr;
             }
         }
@@ -461,35 +408,12 @@
                     <input type="number" id="vehicleCount" value="50" min="10" max="500" step="10">
                     <div class="value-info" id="vehicleInfo">50대</div>
                 </div>
-                
-                <div class="input-group">
-                    <label>평균 속도</label>
-                    <div class="button-group-options">
-                        <button class="option-btn active" onclick="setSpeed('slow')">느림</button>
-                        <button class="option-btn" onclick="setSpeed('normal')">보통</button>
-                        <button class="option-btn" onclick="setSpeed('fast')">빠름</button>
-                    </div>
-                    <div class="value-info" id="speedInfo">40 km/h (느림)</div>
-                </div>
 
-                <div class="input-group">
-                    <label>교통량</label>
-                    <div class="button-group-options">
-                        <button class="option-btn" onclick="setVolume('low')">적음</button>
-                        <button class="option-btn active" onclick="setVolume('normal')">보통</button>
-                        <button class="option-btn" onclick="setVolume('high')">많음</button>
-                    </div>
-                    <div class="value-info" id="volumeInfo">60 대/분 (보통)</div>
-                </div>
-
-                <div class="input-group">
-                    <label>차량 밀도</label>
-                    <div class="button-group-options">
-                        <button class="option-btn" onclick="setDensity('low')">적음</button>
-                        <button class="option-btn active" onclick="setDensity('normal')">보통</button>
-                        <button class="option-btn" onclick="setDensity('high')">많음</button>
-                    </div>
-                    <div class="value-info" id="densityInfo">40 대/km (보통)</div>
+                <div class="traffic-info">
+                    📊 <strong>교통 상황 (고정)</strong><br>
+                    교통량: 80대/분<br>
+                    차량밀도: 60대/km<br>
+                    <em style="font-size: 10px;">(정체 발생 상태)</em>
                 </div>
 
                 <div class="control-buttons">
@@ -500,7 +424,8 @@
                 <button class="control-btn reset-btn" onclick="resetSimulation()">↺ 초기화</button>
 
                 <div class="info-box">
-                    💡 <strong>정체는 무작위로 발생합니다!</strong> 같은 조건에서도 매번 다른 패턴의 교통이 발생합니다. AI는 최적의 경로를 찾고, 평균인은 보통의 운전을 합니다.
+                    💡 <strong>정체는 무작위로 발생합니다!</strong><br>
+                    AI는 최적화된 속도 조절로 정체를 빠져나가고, 평균인은 일반적인 운전으로 반응합니다.
                 </div>
             </div>
 
@@ -512,7 +437,7 @@
 
                 <div class="result-grid">
                     <div class="result-box">
-                        <h3>실제 혼잡도</h3>
+                        <h3>혼잡도</h3>
                         <div class="result-value" id="aiCongestionIndex">0%</div>
                         <div class="progress-bar">
                             <div class="progress-fill" id="aiCongestionBar" style="width: 0%; font-size: 9px;">0%</div>
@@ -531,7 +456,7 @@
                         <h3>정체 탈출 시간</h3>
                         <div class="result-value" id="aiEscapeTime">-</div>
                         <div style="font-size: 11px; color: #999; margin-top: 10px;">
-                            <span class="ai-badge">AI 알고리즘</span>
+                            <span class="ai-badge">AI 최적화</span>
                         </div>
                     </div>
                 </div>
@@ -550,7 +475,7 @@
 
                 <div class="result-grid">
                     <div class="result-box">
-                        <h3>실제 혼잡도</h3>
+                        <h3>혼잡도</h3>
                         <div class="result-value" id="humanCongestionIndex">0%</div>
                         <div class="progress-bar">
                             <div class="progress-fill" id="humanCongestionBar" style="width: 0%; font-size: 9px;">0%</div>
@@ -612,15 +537,13 @@
         </div>
 
         <div class="explanation">
-            <h3>📖 AI vs 평균인 알고리즘</h3>
+            <h3>📖 시뮬레이션 설명</h3>
             <ul>
-                <li><strong>AI 운전 (최적화):</strong> 실시간 교통 정보를 분석하여 최적의 경로와 속도를 선택합니다. 차선 변경을 효율적으로 하고, 정체를 미리 예측하여 회피합니다.</li>
+                <li><strong>고정된 교통 상황:</strong> 교통량 80대/분, 차량밀도 60대/km으로 정체가 발생하는 상황을 시뮬레이션합니다.</li>
+                <li><strong>AI 운전 (최적화):</strong> 실시간 교통 정보를 분석하여 최적의 속도를 선택합니다. 차선 변경을 효율적으로 하고, 정체를 미리 예측하여 회피합니다.</li>
                 <li><strong>평균인 운전 (일반적):</strong> 기본적인 운전 규칙을 따르며, 앞차와의 거리 유지 정도만 고려합니다. 정체에 반응하지만 미리 예측하지 못합니다.</li>
-                <li><strong>교통량:</strong> 단위 시간당 도로를 통과하는 차량 수 (적음: 30대/분, 보통: 60대/분, 많음: 100대/분)</li>
-                <li><strong>평균 속도:</strong> 도로상의 차량들이 이동하는 속도 (느림: 40km/h, 보통: 60km/h, 빠름: 90km/h)</li>
-                <li><strong>차량 밀도:</strong> 단위 거리당 도로상의 차량 수 (적음: 20대/km, 보통: 40대/km, 많음: 80대/km)</li>
-                <li><strong>정체 탈출 시간:</strong> 평균 속도가 70km/h 이상으로 회복되는 데 걸리는 시간</li>
-                <li><strong>서비스 수준(LOS):</strong> A(자유) ~ F(완전정체)로 표현되는 도로 서비스 질 평가</li>
+                <li><strong>정체 탈출 시간:</strong> 평균 속도가 70km/h 이상으로 회복되는 데 걸리는 시간을 측정합니다.</li>
+                <li><strong>효율성 비교:</strong> AI와 평균인의 성능 차이를 정량화하여 표시합니다.</li>
             </ul>
         </div>
     </div>
@@ -649,46 +572,50 @@
                 return '#F44336';
             }
 
-            update(canvasWidth, otherVehicles, targetSpeed) {
-                this.targetSpeed = targetSpeed;
-                
-                // 무작위 방해 요소 (사고, 차선 변경 등)
-                const disruptionChance = this.isAI ? 0.003 : 0.01;
-                if (Math.random() < disruptionChance) {
-                    const disruption = (Math.random() - 0.5) * (this.isAI ? 10 : 20);
-                    this.targetSpeed = Math.max(10, this.targetSpeed + disruption);
-                }
-                
-                // AI의 경우 더 효율적인 차선 변경
-                let minSafeDistance = this.isAI ? 35 : 40;
+            update(canvasWidth, otherVehicles, baseSpeed) {
+                // 앞의 차량과의 거리 확인
+                let minSafeDistance = this.isAI ? 30 : 40;
+                let targetSpeed = baseSpeed;
                 let canAccelerate = true;
                 let closestDistance = Infinity;
 
                 for (let other of otherVehicles) {
                     if (other.lane === this.lane && other !== this) {
                         let distance = other.x - this.x;
-                        if (distance > 0 && distance < minSafeDistance + 20) {
-                            const adjustedSpeed = this.isAI 
-                                ? Math.max(10, other.speed - 1) 
-                                : Math.max(10, other.speed - 3 - (5 * this.drivingBehavior));
-                            this.targetSpeed = Math.min(this.targetSpeed, adjustedSpeed);
+                        if (distance > 0 && distance < minSafeDistance + 30) {
+                            // 앞에 차량이 있으면 안전거리 유지
+                            if (this.isAI) {
+                                // AI: 더 공격적으로 앞차를 추적
+                                targetSpeed = Math.max(15, other.speed - 2);
+                            } else {
+                                // 평균인: 더 보수적으로 거리 유지
+                                targetSpeed = Math.max(10, other.speed - 5 - (5 * this.drivingBehavior));
+                            }
                             canAccelerate = false;
                             closestDistance = Math.min(closestDistance, distance);
                         }
                     }
                 }
 
-                // AI의 더 효율적인 가속/감속
-                let accelerationFactor = this.isAI ? 1.5 : (this.drivingBehavior > 0.5 ? 1.3 : 0.8);
-                let decelerationFactor = this.isAI ? 1.8 : (this.drivingBehavior > 0.5 ? 1.2 : 1.5);
-
-                if (this.speed < this.targetSpeed && canAccelerate) {
-                    this.speed = Math.min(this.speed + this.acceleration * accelerationFactor, this.targetSpeed);
-                } else if (this.speed > this.targetSpeed) {
-                    this.speed = Math.max(this.speed - this.acceleration * decelerationFactor, this.targetSpeed);
+                // 무작위 방해 요소 (사고, 차선 변경 등)
+                const disruptionChance = this.isAI ? 0.002 : 0.008;
+                if (Math.random() < disruptionChance) {
+                    const disruption = (Math.random() - 0.5) * (this.isAI ? 8 : 15);
+                    targetSpeed = Math.max(10, targetSpeed + disruption);
                 }
 
-                this.speed += (Math.random() - 0.5) * (this.isAI ? 0.5 : 1);
+                // AI의 더 빠른 반응
+                let accelerationFactor = this.isAI ? 1.8 : (this.drivingBehavior > 0.5 ? 1.2 : 0.9);
+                let decelerationFactor = this.isAI ? 2.0 : (this.drivingBehavior > 0.5 ? 1.0 : 1.8);
+
+                if (this.speed < targetSpeed && canAccelerate) {
+                    this.speed = Math.min(this.speed + this.acceleration * accelerationFactor, targetSpeed);
+                } else if (this.speed > targetSpeed) {
+                    this.speed = Math.max(this.speed - this.acceleration * decelerationFactor, targetSpeed);
+                }
+
+                // 미세한 속도 변화
+                this.speed += (Math.random() - 0.5) * (this.isAI ? 0.3 : 0.8);
                 this.speed = Math.max(10, Math.min(100, this.speed));
 
                 this.x += this.speed / 10;
@@ -725,10 +652,13 @@
                 this.frameCount = 0;
                 this.isAI = isAI;
                 
-                this.trafficVolume = 60;
-                this.avgSpeed = 40;
-                this.vehicleDensity = 40;
+                // 고정된 교통 상황 (정체 발생)
+                this.trafficVolume = 80;      // 대/분
+                this.vehicleDensity = 60;     // 대/km
                 this.vehicleCount = 50;
+                
+                // 초기 속도 (정체 상황)
+                this.currentAvgSpeed = 35;    // km/h
                 
                 this.escapeTime = -1;
                 this.escapeFrame = -1;
@@ -750,12 +680,13 @@
                 this.frameCount = 0;
                 this.escapeTime = -1;
                 this.escapeFrame = -1;
+                this.currentAvgSpeed = 35;
                 
+                // 초기 차량 생성 (정체 상황)
                 for (let i = 0; i < this.vehicleCount; i++) {
                     const lane = i % 3;
                     const x = (i / 3) * 60 - 30;
-                    const speedVariation = (Math.random() - 0.5) * 30;
-                    const speed = Math.max(10, this.avgSpeed + speedVariation);
+                    const speed = 30 + Math.random() * 10;  // 30~40 km/h 정체 상황
                     this.vehicles.push(new Vehicle(lane, x, speed, this.isAI));
                 }
                 
@@ -774,15 +705,26 @@
                 this.vehicles = [];
                 this.frameCount = 0;
                 this.escapeTime = -1;
+                this.currentAvgSpeed = 35;
                 this.draw();
             }
 
             updateSimulation() {
                 this.vehicles = this.vehicles.filter(v => v.x < this.canvas.width + 30);
 
+                // 계속해서 새로운 차량 추가 (일정한 교통량 유지)
+                const vehiclesPerFrame = this.trafficVolume / (60 * 60);
+                if (Math.random() < vehiclesPerFrame && this.vehicles.length < this.vehicleCount * 2) {
+                    const lane = Math.floor(Math.random() * 3);
+                    const speed = 30 + Math.random() * 10;
+                    this.vehicles.push(new Vehicle(lane, -30, speed, this.isAI));
+                }
+
+                // 차량 업데이트
                 for (let vehicle of this.vehicles) {
-                    vehicle.update(this.canvas.width, this.vehicles, this.avgSpeed);
+                    vehicle.update(this.canvas.width, this.vehicles, this.currentAvgSpeed);
                     
+                    // 정체 탈출 시간 추적
                     if (this.escapeTime === -1) {
                         const avgCurrentSpeed = this.calculateAverageSpeed();
                         if (avgCurrentSpeed > 70) {
@@ -791,6 +733,10 @@
                         }
                     }
                 }
+
+                // 평균 속도를 점진적으로 업데이트
+                const avgSpeed = this.calculateAverageSpeed();
+                this.currentAvgSpeed = this.currentAvgSpeed * 0.95 + avgSpeed * 0.05;
             }
 
             calculateMetrics() {
@@ -798,7 +744,7 @@
                 const densityRatio = Math.min(1, this.vehicleDensity / 100);
                 const congestionIndex = Math.round((volumeRatio + densityRatio) / 2 * 100);
 
-                const speedRatio = Math.max(0, (90 - this.avgSpeed) / 90);
+                const speedRatio = Math.max(0, (90 - this.currentAvgSpeed) / 90);
                 const perceivedCongestion = Math.round(speedRatio * 100);
 
                 const avgSpeed = this.calculateAverageSpeed();
@@ -813,7 +759,7 @@
             }
 
             calculateAverageSpeed() {
-                if (this.vehicles.length === 0) return this.avgSpeed;
+                if (this.vehicles.length === 0) return this.currentAvgSpeed;
                 const totalSpeed = this.vehicles.reduce((sum, v) => sum + v.speed, 0);
                 return totalSpeed / this.vehicles.length;
             }
@@ -864,13 +810,13 @@
                 let statusText = `차량: ${metrics.vehiclesOnRoad}대 | 혼잡도: ${metrics.congestionIndex}% | 속도: ${metrics.avgSpeed} km/h`;
                 
                 if (metrics.avgSpeed > 70) {
-                    statusText = '✅ ' + statusText + ' - 정상 교통 흐름';
+                    statusText = '✅ ' + statusText + ' - 정체 탈출!';
                 } else if (metrics.avgSpeed > 50) {
-                    statusText = '⚠️ ' + statusText + ' - 약간의 정체';
+                    statusText = '⚠️ ' + statusText + ' - 정체 해소 중...';
                 } else if (metrics.avgSpeed > 30) {
-                    statusText = '🚨 ' + statusText + ' - 심각한 정체';
+                    statusText = '🚨 ' + statusText + ' - 정체 상황';
                 } else {
-                    statusText = '🛑 ' + statusText + ' - 완전 정체';
+                    statusText = '🛑 ' + statusText + ' - 심각한 정체';
                 }
                 
                 statusElement.textContent = statusText;
@@ -922,7 +868,7 @@
                 ctx.fillText('차량: ' + this.vehicles.length + '대', 20, 30);
                 ctx.fillText('평균 속도: ' + this.calculateAverageSpeed().toFixed(1) + ' km/h', 20, 50);
                 ctx.fillText('모드: ' + (this.isAI ? 'AI 최적화' : '평균인'), 20, 70);
-                ctx.fillText('프레임: ' + this.frameCount, 20, 85);
+                ctx.fillText('경과: ' + (this.frameCount / 60).toFixed(1) + '초', 20, 85);
             }
 
             animate() {
@@ -953,81 +899,6 @@
                 document.getElementById('vehicleInfo').textContent = e.target.value + '대';
             });
         });
-
-        function setSpeed(level) {
-            const speedButtons = document.querySelectorAll('.option-btn');
-            speedButtons[0].classList.toggle('active', level === 'slow');
-            speedButtons[1].classList.toggle('active', level === 'normal');
-            speedButtons[2].classList.toggle('active', level === 'fast');
-
-            switch(level) {
-                case 'slow':
-                    aiSimulation.avgSpeed = 40;
-                    humanSimulation.avgSpeed = 40;
-                    document.getElementById('speedInfo').textContent = '40 km/h (느림)';
-                    break;
-                case 'normal':
-                    aiSimulation.avgSpeed = 60;
-                    humanSimulation.avgSpeed = 60;
-                    document.getElementById('speedInfo').textContent = '60 km/h (보통)';
-                    break;
-                case 'fast':
-                    aiSimulation.avgSpeed = 90;
-                    humanSimulation.avgSpeed = 90;
-                    document.getElementById('speedInfo').textContent = '90 km/h (빠름)';
-                    break;
-            }
-        }
-
-        function setVolume(level) {
-            const volumeButtons = document.querySelectorAll('.option-btn');
-            volumeButtons[3].classList.toggle('active', level === 'low');
-            volumeButtons[4].classList.toggle('active', level === 'normal');
-            volumeButtons[5].classList.toggle('active', level === 'high');
-
-            switch(level) {
-                case 'low':
-                    aiSimulation.trafficVolume = 30;
-                    humanSimulation.trafficVolume = 30;
-                    document.getElementById('volumeInfo').textContent = '30 대/분 (적음)';
-                    break;
-                case 'normal':
-                    aiSimulation.trafficVolume = 60;
-                    humanSimulation.trafficVolume = 60;
-                    document.getElementById('volumeInfo').textContent = '60 대/분 (보통)';
-                    break;
-                case 'high':
-                    aiSimulation.trafficVolume = 100;
-                    humanSimulation.trafficVolume = 100;
-                    document.getElementById('volumeInfo').textContent = '100 대/분 (많음)';
-                    break;
-            }
-        }
-
-        function setDensity(level) {
-            const densityButtons = document.querySelectorAll('.option-btn');
-            densityButtons[6].classList.toggle('active', level === 'low');
-            densityButtons[7].classList.toggle('active', level === 'normal');
-            densityButtons[8].classList.toggle('active', level === 'high');
-
-            switch(level) {
-                case 'low':
-                    aiSimulation.vehicleDensity = 20;
-                    humanSimulation.vehicleDensity = 20;
-                    document.getElementById('densityInfo').textContent = '20 대/km (적음)';
-                    break;
-                case 'normal':
-                    aiSimulation.vehicleDensity = 40;
-                    humanSimulation.vehicleDensity = 40;
-                    document.getElementById('densityInfo').textContent = '40 대/km (보통)';
-                    break;
-                case 'high':
-                    aiSimulation.vehicleDensity = 80;
-                    humanSimulation.vehicleDensity = 80;
-                    document.getElementById('densityInfo').textContent = '80 대/km (많음)';
-                    break;
-            }
-        }
 
         function startSimulation() {
             const vehicleCount = parseInt(document.getElementById('vehicleCount').value);
@@ -1066,21 +937,6 @@
             humanSimulation.reset();
             isSimulationRunning = false;
 
-            document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.option-btn')[0].classList.add('active');
-            document.querySelectorAll('.option-btn')[4].classList.add('active');
-            document.querySelectorAll('.option-btn')[7].classList.add('active');
-
-            aiSimulation.trafficVolume = 60;
-            aiSimulation.avgSpeed = 40;
-            aiSimulation.vehicleDensity = 40;
-            humanSimulation.trafficVolume = 60;
-            humanSimulation.avgSpeed = 40;
-            humanSimulation.vehicleDensity = 40;
-
-            document.getElementById('speedInfo').textContent = '40 km/h (느림)';
-            document.getElementById('volumeInfo').textContent = '60 대/분 (보통)';
-            document.getElementById('densityInfo').textContent = '40 대/km (보통)';
             document.getElementById('vehicleCount').value = 50;
             document.getElementById('vehicleInfo').textContent = '50대';
 
@@ -1098,21 +954,22 @@
             if (aiMetrics.escapeTime > 0 && humanMetrics.escapeTime > 0) {
                 const diff = humanMetrics.escapeTime - aiMetrics.escapeTime;
                 timeDiff = diff > 0 
-                    ? `AI가 ${diff.toFixed(1)}초 빠름` 
+                    ? `AI가 ${diff.toFixed(1)}초 빠름 ⚡` 
                     : `동일 (차이: ${Math.abs(diff).toFixed(1)}초)`;
             } else if (aiMetrics.escapeTime > 0) {
-                timeDiff = 'AI만 탈출 완료';
+                timeDiff = '✅ AI만 정체 탈출!';
             } else if (humanMetrics.escapeTime > 0) {
-                timeDiff = '평균인만 탈출 완료';
+                timeDiff = '평균인만 정체 탈출';
             }
 
             const speedDiff = aiMetrics.avgSpeed - humanMetrics.avgSpeed;
             const speedImprovement = speedDiff > 0 
-                ? `AI가 ${speedDiff} km/h 빠름` 
+                ? `AI가 ${speedDiff} km/h 빠름 🚀` 
                 : `평균인이 ${Math.abs(speedDiff)} km/h 빠름`;
 
-            const efficiency = (aiMetrics.avgSpeed / (humanMetrics.avgSpeed || 1) * 100).toFixed(1);
-            const optimization = ((aiMetrics.avgSpeed - humanMetrics.avgSpeed) / (humanMetrics.avgSpeed || 1) * 100).toFixed(1);
+            const humanSpeed = Math.max(humanMetrics.avgSpeed, 1);
+            const efficiency = (aiMetrics.avgSpeed / humanSpeed * 100).toFixed(1);
+            const optimization = ((aiMetrics.avgSpeed - humanMetrics.avgSpeed) / humanSpeed * 100).toFixed(1);
 
             document.getElementById('timeDiff').textContent = timeDiff;
             document.getElementById('speedImprovement').textContent = speedImprovement;
