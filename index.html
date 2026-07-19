@@ -653,7 +653,7 @@
                 this.targetSpeed = targetSpeed;
                 
                 // 무작위 방해 요소 (사고, 차선 변경 등)
-                const disruptionChance = this.isAI ? 0.003 : 0.01; // AI는 더 낮은 확률
+                const disruptionChance = this.isAI ? 0.003 : 0.01;
                 if (Math.random() < disruptionChance) {
                     const disruption = (Math.random() - 0.5) * (this.isAI ? 10 : 20);
                     this.targetSpeed = Math.max(10, this.targetSpeed + disruption);
@@ -709,7 +709,6 @@
                 ctx.fillRect(this.x + 4, y + 2, 5, 4);
                 ctx.fillRect(this.x + 11, y + 2, 5, 4);
 
-                // AI는 테두리를 다르게 표시
                 ctx.strokeStyle = this.isAI ? '#667eea' : '#333';
                 ctx.lineWidth = this.isAI ? 2 : 1;
                 ctx.strokeRect(this.x, y, this.width, this.height);
@@ -752,7 +751,6 @@
                 this.escapeTime = -1;
                 this.escapeFrame = -1;
                 
-                // 초기 차량 생성
                 for (let i = 0; i < this.vehicleCount; i++) {
                     const lane = i % 3;
                     const x = (i / 3) * 60 - 30;
@@ -780,18 +778,15 @@
             }
 
             updateSimulation() {
-                // 기존 차량이 빠져나간 것들 제거
                 this.vehicles = this.vehicles.filter(v => v.x < this.canvas.width + 30);
 
-                // 차량 업데이트
                 for (let vehicle of this.vehicles) {
                     vehicle.update(this.canvas.width, this.vehicles, this.avgSpeed);
                     
-                    // 정체 탈출 시간 추적
                     if (this.escapeTime === -1) {
                         const avgCurrentSpeed = this.calculateAverageSpeed();
                         if (avgCurrentSpeed > 70) {
-                            this.escapeTime = (this.frameCount / 60); // 초 단위로 변환
+                            this.escapeTime = (this.frameCount / 60);
                             this.escapeFrame = this.frameCount;
                         }
                     }
@@ -826,7 +821,6 @@
             updateUI(uiPrefix) {
                 const metrics = this.calculateMetrics();
                 
-                // 실제 혼잡도 업데이트
                 const congestionElement = document.getElementById(`${uiPrefix}CongestionIndex`);
                 const congestionBar = document.getElementById(`${uiPrefix}CongestionBar`);
                 congestionElement.textContent = metrics.congestionIndex + '%';
@@ -843,7 +837,6 @@
                     congestionBar.classList.remove('yellow', 'red');
                 }
 
-                // 평균 속도 업데이트
                 const speedElement = document.getElementById(`${uiPrefix}AvgSpeed`);
                 const speedBar = document.getElementById(`${uiPrefix}SpeedBar`);
                 speedElement.textContent = metrics.avgSpeed + ' km/h';
@@ -860,7 +853,6 @@
                     speedBar.classList.remove('yellow');
                 }
 
-                // 정체 탈출 시간
                 const escapeElement = document.getElementById(`${uiPrefix}EscapeTime`);
                 if (metrics.escapeTime > 0) {
                     escapeElement.textContent = metrics.escapeTime.toFixed(1) + '초';
@@ -868,7 +860,6 @@
                     escapeElement.textContent = '진행중...';
                 }
 
-                // 상태 텍스트
                 const statusElement = document.getElementById(`${uiPrefix}Status`);
                 let statusText = `차량: ${metrics.vehiclesOnRoad}대 | 혼잡도: ${metrics.congestionIndex}% | 속도: ${metrics.avgSpeed} km/h`;
                 
@@ -890,11 +881,9 @@
                 const width = this.canvas.width;
                 const height = this.canvas.height;
 
-                // 도로 배경
                 ctx.fillStyle = '#333';
                 ctx.fillRect(0, 0, width, height);
 
-                // 차선 표시
                 const laneHeight = height / 3;
                 ctx.strokeStyle = '#fff';
                 ctx.lineWidth = 2;
@@ -909,7 +898,6 @@
 
                 ctx.setLineDash([]);
 
-                // 도로 경계선
                 ctx.strokeStyle = '#fff';
                 ctx.lineWidth = 3;
                 ctx.beginPath();
@@ -922,12 +910,10 @@
                 ctx.lineTo(width, height);
                 ctx.stroke();
 
-                // 차량 그리기
                 for (let vehicle of this.vehicles) {
                     vehicle.draw(ctx, height);
                 }
 
-                // 통계 정보 표시
                 ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
                 ctx.fillRect(10, 10, 220, 80);
                 
@@ -961,6 +947,11 @@
         window.addEventListener('DOMContentLoaded', () => {
             aiSimulation = new TrafficSimulation('aiCanvas', true);
             humanSimulation = new TrafficSimulation('humanCanvas', false);
+            
+            const vehicleInput = document.getElementById('vehicleCount');
+            vehicleInput.addEventListener('input', (e) => {
+                document.getElementById('vehicleInfo').textContent = e.target.value + '대';
+            });
         });
 
         function setSpeed(level) {
@@ -1054,7 +1045,6 @@
             
             isSimulationRunning = true;
             
-            // 비교 분석 업데이트 (1초마다)
             const comparisonInterval = setInterval(() => {
                 if (!isSimulationRunning) {
                     clearInterval(comparisonInterval);
@@ -1094,7 +1084,6 @@
             document.getElementById('vehicleCount').value = 50;
             document.getElementById('vehicleInfo').textContent = '50대';
 
-            // 비교 분석 초기화
             document.getElementById('timeDiff').textContent = '-';
             document.getElementById('speedImprovement').textContent = '-';
             document.getElementById('efficiency').textContent = '-';
@@ -1122,8 +1111,8 @@
                 ? `AI가 ${speedDiff} km/h 빠름` 
                 : `평균인이 ${Math.abs(speedDiff)} km/h 빠름`;
 
-            const efficiency = (aiMetrics.avgSpeed / humanMetrics.avgSpeed * 100).toFixed(1);
-            const optimization = ((aiMetrics.avgSpeed - humanMetrics.avgSpeed) / humanMetrics.avgSpeed * 100).toFixed(1);
+            const efficiency = (aiMetrics.avgSpeed / (humanMetrics.avgSpeed || 1) * 100).toFixed(1);
+            const optimization = ((aiMetrics.avgSpeed - humanMetrics.avgSpeed) / (humanMetrics.avgSpeed || 1) * 100).toFixed(1);
 
             document.getElementById('timeDiff').textContent = timeDiff;
             document.getElementById('speedImprovement').textContent = speedImprovement;
@@ -1132,14 +1121,6 @@
                 ? `+${optimization}%` 
                 : `${optimization}%`;
         }
-
-        // 차량 수 입력 업데이트
-        document.addEventListener('DOMContentLoaded', () => {
-            const vehicleInput = document.getElementById('vehicleCount');
-            vehicleInput.addEventListener('input', (e) => {
-                document.getElementById('vehicleInfo').textContent = e.target.value + '대';
-            });
-        });
     </script>
 </body>
 </html>
